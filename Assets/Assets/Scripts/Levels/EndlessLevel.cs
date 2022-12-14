@@ -35,10 +35,10 @@ public class EndlessLevel : Level
         grappleObj = grappleObject;
         backwall = GameObject.Find("Backwall");
         endSegment = GameObject.Find("EndSegment");
-        segmentArray = new GameObject[] { GameObject.Find("Segment1"), GameObject.Find("Segment2"), GameObject.Find("Segment3"), GameObject.Find("Segment4"), GameObject.Find("Segment5") };
-        segmentDefaultPosArray = new Vector3[] {segmentArray[0].transform.position, segmentArray[1].transform.position, segmentArray[2].transform.position, segmentArray[3].transform.position, segmentArray[4].transform.position };
-        spinObjects = new GameObject[] { GameObject.Find("SemiCircle1"), GameObject.Find("SemiCircle2"), GameObject.Find("SemiCircle3"), GameObject.Find("SemiCircle4"), GameObject.Find("SemiCircle5") };
-        wallSpinnerArray = new WallSpinner[] { new WallSpinner(spinObjects[0]), new WallSpinner(spinObjects[1]), new WallSpinner(spinObjects[2]), new WallSpinner(spinObjects[3]), new WallSpinner(spinObjects[4]) };
+        segmentArray = new GameObject[] { GameObject.Find("Segment1"), GameObject.Find("Segment2"), GameObject.Find("Segment3"), GameObject.Find("Segment4") };
+        segmentDefaultPosArray = new Vector3[] {segmentArray[0].transform.position, segmentArray[1].transform.position, segmentArray[2].transform.position, segmentArray[3].transform.position };
+        spinObjects = new GameObject[] { GameObject.Find("SemiCircle1"), GameObject.Find("SemiCircle2"), GameObject.Find("SemiCircle3"), GameObject.Find("SemiCircle4") };
+        wallSpinnerArray = new WallSpinner[] { new WallSpinner(spinObjects[0]), new WallSpinner(spinObjects[1]), new WallSpinner(spinObjects[2]), new WallSpinner(spinObjects[3]) };
         scoreHolder = GameObject.Find("Score Counter").GetComponent<Text>();
         finalScoreHolder = GameObject.Find("YouScored").GetComponent<Text>();
         highScoreHolder = GameObject.Find("HighScore").GetComponent<Text>();
@@ -144,7 +144,7 @@ public class EndlessLevel : Level
             Vector3 nextPos = segmentArray[i].transform.position;
             Vector3 nextBackwallPos = backwall.transform.position;
             Vector3 nextEndSegmentPos = endSegment.transform.position;
-            nextPos.z += segmentDistance * 5;
+            nextPos.z += segmentDistance * 4;
             nextBackwallPos.z += segmentDistance;
             nextEndSegmentPos.z += segmentDistance;
             if (playerObj.transform.position.z >= segmentArray[i].transform.position.z - 10f)
