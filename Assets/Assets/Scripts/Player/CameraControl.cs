@@ -111,8 +111,8 @@ public class CameraControl : MonoBehaviour
             //Making sure moveTarget matches the current position to accurately track the next move
             moveTarget.transform.position = mainCamera.transform.position;
 
-            x += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
-            y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
+            x += Input.GetAxis("Mouse X") * ScaleMouseSpeed(xSpeed) * distance * 0.02f;
+            y -= Input.GetAxis("Mouse Y") * ScaleMouseSpeed(ySpeed) * 0.02f;
 
             y = ClampAngle(y, yMinLimit, yMaxLimit);
 
@@ -206,5 +206,10 @@ public class CameraControl : MonoBehaviour
         {
             crosshairArray[i].SetActive(false);
         }
+    }
+
+    private float ScaleMouseSpeed(float speed)
+    {
+        return speed * PlayerPrefs.GetFloat("mouseSens");
     }
 }

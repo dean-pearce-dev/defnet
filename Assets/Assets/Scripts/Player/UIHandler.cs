@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System;
 
 public class UIHandler : MonoBehaviour
 {
@@ -16,12 +17,14 @@ public class UIHandler : MonoBehaviour
     private Image[] confirmPromptImageArray;
 
     //Options Menu Variables
-    private GameObject effectVolumeUI, musicVolumeUI, backUI, optionsHolder;
+    private GameObject effectVolumeUI, musicVolumeUI, mouseSensUI, backUI, optionsHolder;
     private GameObject[] optionsArray;
     private Image[] optionsImageArray;
-    private string effectVolString, musicVolString;
-    private Text effectVolText, musicVolText;
+    private string effectVolString, musicVolString, mouseSensString;
+    private Text effectVolText, musicVolText, mouseSensText;
     private int effectVolume, musicVolume;
+    private float mouseSens;
+    private float mouseSensIncrement = 0.05f;
 
     //Endless Level Score & Confirm
     private GameObject endlessYesUI, endlessNoUI, endlessConfirmHolder;
@@ -76,13 +79,15 @@ public class UIHandler : MonoBehaviour
         optionsHolder = GameObject.Find("OptionsHolder");
         effectVolumeUI = GameObject.Find("Effects Volume");
         musicVolumeUI = GameObject.Find("Music Volume");
+        mouseSensUI = GameObject.Find("Mouse Sensitivity");
         backUI = GameObject.Find("Back");
-        optionsArray = new GameObject[] { effectVolumeUI, musicVolumeUI, backUI };
-        optionsImageArray = new Image[] { effectVolumeUI.GetComponent<Image>(), musicVolumeUI.GetComponent<Image>(), backUI.GetComponent<Image>() };
+        optionsArray = new GameObject[] { effectVolumeUI, musicVolumeUI, mouseSensUI, backUI };
+        optionsImageArray = new Image[] { effectVolumeUI.GetComponent<Image>(), musicVolumeUI.GetComponent<Image>(), mouseSensUI.GetComponent<Image>(), backUI.GetComponent<Image>() };
 
         //Music & Effects Volume
         effectVolText = GameObject.Find("EffectsVolValue").GetComponent<Text>();
         musicVolText = GameObject.Find("MusicVolValue").GetComponent<Text>();
+        mouseSensText = GameObject.Find("MouseSensValue").GetComponent<Text>();
 
         //Audio
         menuClick = GameObject.Find("MenuMove").GetComponent<AudioSource>();
@@ -170,6 +175,38 @@ public class UIHandler : MonoBehaviour
                 musicVolText.text = musicVolume.ToString();
                 PlayerPrefs.SetInt("musicVolume", musicVolume);
             }
+            if (Input.GetKeyDown("right") && selectedElement == mouseSensUI && mouseSens < 1.0f)
+            {
+                menuClick.Play();
+                mouseSens += mouseSensIncrement;
+
+                // Clamping mouse sens
+                if (mouseSens >= 1.0f)
+                {
+                    mouseSens = 1.0f;
+                }
+
+                mouseSens = (float)Math.Round(mouseSens * 100f) / 100f;
+
+                mouseSensText.text = mouseSens.ToString();
+                PlayerPrefs.SetFloat("mouseSens", mouseSens);
+            }
+            if (Input.GetKeyDown("left") && selectedElement == mouseSensUI && mouseSens > 0.05f)
+            {
+                menuClick.Play();
+                mouseSens -= mouseSensIncrement;
+
+                // Clamping mouse sens
+                if (mouseSens <= 0.05f)
+                {
+                    mouseSens = 0.05f;
+                }
+
+                mouseSens = (float)Math.Round(mouseSens * 100f) / 100f;
+
+                mouseSensText.text = mouseSens.ToString();
+                PlayerPrefs.SetFloat("mouseSens", mouseSens);
+            }
         }
 
         if (Input.GetKeyDown("up") && selectedElemNum > 0)
@@ -206,8 +243,10 @@ public class UIHandler : MonoBehaviour
                 menuConfirm.Play();
                 effectVolume = PlayerPrefs.GetInt("effectsVolume");
                 musicVolume = PlayerPrefs.GetInt("musicVolume");
+                mouseSens = PlayerPrefs.GetFloat("mouseSens");
                 effectVolText.text = effectVolume.ToString();
                 musicVolText.text = musicVolume.ToString();
+                mouseSensText.text = mouseSens.ToString();
                 SetMenuSelection(optionsHolder, optionsArray, optionsImageArray);
             }
             //Exit condition which sends the player to a confirm prompt, where yes will return to main menu

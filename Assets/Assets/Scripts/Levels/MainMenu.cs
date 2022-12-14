@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System;
 
 public class MainMenu : Level
 {
@@ -10,12 +11,14 @@ public class MainMenu : Level
     private Image[] menuImageArray;
 
     //Options Variables
-    private GameObject effectVolumeUI, musicVolumeUI, optionsHolder;
+    private GameObject effectVolumeUI, musicVolumeUI, mouseSensUI, optionsHolder;
     private GameObject[] optionsArray;
     private Image[] optionsImageArray;
     private string effectVolString, musicVolString;
-    private Text effectVolText, musicVolText;
+    private Text effectVolText, musicVolText, mouseSensText;
     private int effectVolume, musicVolume;
+    private float mouseSens;
+    private float mouseSensIncrement = 0.05f;
 
     //Flavour Text Variables
     private GameObject flavourTextHolder;
@@ -31,6 +34,7 @@ public class MainMenu : Level
     //Options
     private string effectsVolFlavour = "Overall volume of the game.";
     private string musicVolFlavour = "Volume of the background music.";
+    private string mouseSensFlavour = "Sensitivity of the mouse movement.";
     private string[] optionsFlavourArray;
 
     //General Variables
@@ -75,14 +79,16 @@ public class MainMenu : Level
         //Options
         effectVolumeUI = GameObject.Find("Effects Volume");
         musicVolumeUI = GameObject.Find("Music Volume");
+        mouseSensUI = GameObject.Find("Mouse Sensitivity");
         optionsHolder = GameObject.Find("Options Holder");
-        optionsArray = new GameObject[] { effectVolumeUI, musicVolumeUI};
-        optionsImageArray = new Image[] { effectVolumeUI.GetComponent<Image>(), musicVolumeUI.GetComponent<Image>() };
-        optionsFlavourArray = new string[] { effectsVolFlavour, musicVolFlavour };
+        optionsArray = new GameObject[] { effectVolumeUI, musicVolumeUI, mouseSensUI};
+        optionsImageArray = new Image[] { effectVolumeUI.GetComponent<Image>(), musicVolumeUI.GetComponent<Image>(), mouseSensUI.GetComponent<Image>() };
+        optionsFlavourArray = new string[] { effectsVolFlavour, musicVolFlavour, mouseSensFlavour };
 
         //Music & Effects Volume
         effectVolText = GameObject.Find("EffectsVolValue").GetComponent<Text>();
         musicVolText = GameObject.Find("MusicVolValue").GetComponent<Text>();
+        mouseSensText = GameObject.Find("MouseSensValue").GetComponent<Text>();
 
         //General Variables
         menuClick = GameObject.Find("MenuMove").GetComponent<AudioSource>();
@@ -105,6 +111,8 @@ public class MainMenu : Level
             PlayerPrefs.SetInt("effectsVolume", 5);
         if (!PlayerPrefs.HasKey("musicVolume"))
             PlayerPrefs.SetInt("musicVolume", 5);
+        if (!PlayerPrefs.HasKey("mouseSens"))
+            PlayerPrefs.SetFloat("mouseSens", 0.5f);
         uiSelectionPos = howToUI.transform.position;
         SetMenuSelection(introHolder, null, null, null);
     }
@@ -245,6 +253,38 @@ public class MainMenu : Level
                 musicVolText.text = musicVolume.ToString();
                 PlayerPrefs.SetInt("musicVolume", musicVolume);
             }
+            if (Input.GetKeyDown("right") && selectedElement == mouseSensUI && mouseSens < 1.0f)
+            {
+                menuClick.Play();
+                mouseSens += mouseSensIncrement;
+
+                // Clamping mouse sens
+                if( mouseSens >= 1.0f)
+                {
+                    mouseSens = 1.0f;
+                }
+
+                mouseSens = (float)Math.Round(mouseSens * 100f) / 100f;
+
+                mouseSensText.text = mouseSens.ToString();
+                PlayerPrefs.SetFloat("mouseSens", mouseSens);
+            }
+            if (Input.GetKeyDown("left") && selectedElement == mouseSensUI && mouseSens > 0.05f)
+            {
+                menuClick.Play();
+                mouseSens -= mouseSensIncrement;
+
+                // Clamping mouse sens
+                if (mouseSens <= 0.05f)
+                {
+                    mouseSens = 0.05f;
+                }
+
+                mouseSens = (float)Math.Round(mouseSens * 100f) / 100f;
+
+                mouseSensText.text = mouseSens.ToString();
+                PlayerPrefs.SetFloat("mouseSens", mouseSens);
+            }
         }
 
         if (Input.GetButtonDown("Confirm"))
@@ -270,8 +310,10 @@ public class MainMenu : Level
                     menuConfirm.Play();
                     effectVolume = PlayerPrefs.GetInt("effectsVolume");
                     musicVolume = PlayerPrefs.GetInt("musicVolume");
+                    mouseSens = PlayerPrefs.GetFloat("mouseSens");
                     effectVolText.text = effectVolume.ToString();
                     musicVolText.text = musicVolume.ToString();
+                    mouseSensText.text = mouseSens.ToString();
                     SetMenuSelection(optionsHolder, optionsArray, optionsImageArray, optionsFlavourArray);
                 }
                 if (selectedElement == creditsUI)
