@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 //http://wiki.unity3d.com/index.php?title=MouseOrbitImproved&oldid=18976
 //Modified to be used in OOP
-public class CameraControl : MonoBehaviour
+public class CameraControl
 {
     //Grapple Variables
     private LayerMask grappleLayer;
@@ -123,8 +123,11 @@ public class CameraControl : MonoBehaviour
             RaycastHit hit;
             if (Physics.Linecast(target.position, mainCamera.transform.position, out hit))
             {
-                //Dividing hit.distance by clippingRate to make the auto camera zoom smoother
-                distance -= (hit.distance / clippingRate);
+                if (LayerMask.LayerToName(hit.transform.gameObject.layer) != "Ground")
+                {
+                    //Dividing hit.distance by clippingRate to make the auto camera zoom smoother
+                    distance -= (hit.distance / clippingRate);               
+                }
             }
             else if (!Physics.Linecast(target.position, mainCamera.transform.position, out hit))
             {

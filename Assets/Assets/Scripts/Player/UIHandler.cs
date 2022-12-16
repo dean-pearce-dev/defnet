@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
 
-public class UIHandler : MonoBehaviour
+public class UIHandler
 {
     //Pause Menu Variables
     private GameObject pauseScreen;
@@ -126,6 +126,40 @@ public class UIHandler : MonoBehaviour
     {
         PauseCheck();
         ResetCheck();
+
+        if (isPaused)
+        {
+            PauseMenuSelection();
+        }
+    }
+
+    public void Unpause()
+    {
+        player.SafePlayerReset();
+        if (!Input.GetButton("Left Grapple"))
+        {
+            grapple.StopGrapple("Left");
+        }
+        if (!Input.GetButton("Right Grapple"))
+        {
+            grapple.StopGrapple("Right");
+        }
+        Time.timeScale = 1;
+        pauseScreen.SetActive(false);
+        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.visible = false;
+
+        isPaused = false;
+    }
+
+    private void Pause()
+    {
+        Time.timeScale = 0;
+        pauseScreen.SetActive(true);
+        Cursor.lockState = CursorLockMode.None;
+        //Cursor.visible = true;
+
+        isPaused = true;
     }
 
     //Simplified logic of the main menu select, without the animation
@@ -147,35 +181,35 @@ public class UIHandler : MonoBehaviour
         //Input for changing the volume in the options screen
         if (currentArray == optionsArray)
         {
-            if (Input.GetKeyDown("right") && selectedElement == effectVolumeUI && effectVolume < 10)
+            if (Input.GetButtonDown("Right") && selectedElement == effectVolumeUI && effectVolume < 10)
             {
                 menuClick.Play();
                 effectVolume++;
                 effectVolText.text = effectVolume.ToString();
                 PlayerPrefs.SetInt("effectsVolume", effectVolume);
             }
-            if (Input.GetKeyDown("left") && selectedElement == effectVolumeUI && effectVolume > 0)
+            if (Input.GetButtonDown("Left") && selectedElement == effectVolumeUI && effectVolume > 0)
             {
                 menuClick.Play();
                 effectVolume--;
                 effectVolText.text = effectVolume.ToString();
                 PlayerPrefs.SetInt("effectsVolume", effectVolume);
             }
-            if (Input.GetKeyDown("right") && selectedElement == musicVolumeUI && musicVolume < 10)
+            if (Input.GetButtonDown("Right") && selectedElement == musicVolumeUI && musicVolume < 10)
             {
                 menuClick.Play();
                 musicVolume++;
                 musicVolText.text = musicVolume.ToString();
                 PlayerPrefs.SetInt("musicVolume", musicVolume);
             }
-            if (Input.GetKeyDown("left") && selectedElement == musicVolumeUI && musicVolume > 0)
+            if (Input.GetButtonDown("Left") && selectedElement == musicVolumeUI && musicVolume > 0)
             {
                 menuClick.Play();
                 musicVolume--;
                 musicVolText.text = musicVolume.ToString();
                 PlayerPrefs.SetInt("musicVolume", musicVolume);
             }
-            if (Input.GetKeyDown("right") && selectedElement == mouseSensUI && mouseSens < 1.0f)
+            if (Input.GetButtonDown("Right") && selectedElement == mouseSensUI && mouseSens < 1.0f)
             {
                 menuClick.Play();
                 mouseSens += mouseSensIncrement;
@@ -191,7 +225,7 @@ public class UIHandler : MonoBehaviour
                 mouseSensText.text = mouseSens.ToString();
                 PlayerPrefs.SetFloat("mouseSens", mouseSens);
             }
-            if (Input.GetKeyDown("left") && selectedElement == mouseSensUI && mouseSens > 0.05f)
+            if (Input.GetButtonDown("Left") && selectedElement == mouseSensUI && mouseSens > 0.05f)
             {
                 menuClick.Play();
                 mouseSens -= mouseSensIncrement;
@@ -209,13 +243,13 @@ public class UIHandler : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown("up") && selectedElemNum > 0)
+        if (Input.GetButtonDown("Forward") && selectedElemNum > 0)
         {
             menuClick.Play();
             selectedElemNum--;
         }
 
-        if (Input.GetKeyDown("down") && selectedElemNum < currentArray.Length - 1)
+        if (Input.GetButtonDown("Backward") && selectedElemNum < currentArray.Length - 1)
         {
             menuClick.Play();
             selectedElemNum++;
@@ -228,7 +262,7 @@ public class UIHandler : MonoBehaviour
             if (selectedElement == resumeUI)
             {
                 menuConfirm.Play();
-                isPaused = false;
+                Unpause();
             }
             //Sends the player to the confirm prompt, where selecting yes will restart
             if (selectedElement == restartUI)
@@ -263,7 +297,7 @@ public class UIHandler : MonoBehaviour
                 if (confirmType == "Restart")
                 {
                     currentLevel.ResetLevel();
-                    isPaused = false;
+                    Unpause();
                 }
                 else if (confirmType == "Exit")
                     SceneManager.LoadScene("Menu");
@@ -331,25 +365,12 @@ public class UIHandler : MonoBehaviour
             SetMenuSelection(pauseMenuHolder, pauseMenuArray, pauseMenuImageArray);
             if (isPaused)
             {
-                player.SafePlayerReset();
-                grapple.StopGrapple("Both");
+                Unpause();
             }
-            isPaused = !isPaused;
-        }
-        if (isPaused)
-        {
-            Time.timeScale = 0;
-            pauseScreen.SetActive(true);
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-            PauseMenuSelection();
-        }
-        else if (!isPaused)
-        {
-            Time.timeScale = 1;
-            pauseScreen.SetActive(false);
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            else
+            {
+                Pause();
+            }
         }
     }
 
@@ -371,7 +392,7 @@ public class UIHandler : MonoBehaviour
     public void EndlessConfirmBox()
     {
         SetMenuSelection(endlessConfirmHolder, endlessConfirmArray, endlessConfirmImageArray);
-        isPaused = true;
+        Pause();
     }
 
     //Getters and Setters

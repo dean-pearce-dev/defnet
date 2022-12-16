@@ -30,10 +30,10 @@ public class Grapple : MonoBehaviour
     private float jointDamper = 10f;
     private float jointMassScale = 2f;
 
-    public Grapple()
+    void Start()
     {
         //Getting references to relevant game components
-        grappleLayer = LayerMask.GetMask("Ground",  "GrappleMoveable", "GrappleMoving");
+        grappleLayer = LayerMask.GetMask("Ground", "GrappleMoveable", "GrappleMoving");
         grappleStatic = LayerMask.GetMask("Ground");
         grappleObject = LayerMask.GetMask("GrappleMoveable");
         grappleMoving = LayerMask.GetMask("GrappleMoving");

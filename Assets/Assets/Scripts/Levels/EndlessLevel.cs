@@ -37,13 +37,13 @@ public class EndlessLevel : Level
         endSegment = GameObject.Find("EndSegment");
         segmentArray = new GameObject[] { GameObject.Find("Segment1"), GameObject.Find("Segment2"), GameObject.Find("Segment3"), GameObject.Find("Segment4") };
         segmentDefaultPosArray = new Vector3[] {segmentArray[0].transform.position, segmentArray[1].transform.position, segmentArray[2].transform.position, segmentArray[3].transform.position };
-        spinObjects = new GameObject[] { GameObject.Find("SemiCircle1"), GameObject.Find("SemiCircle2"), GameObject.Find("SemiCircle3"), GameObject.Find("SemiCircle4") };
-        wallSpinnerArray = new WallSpinner[] { new WallSpinner(spinObjects[0]), new WallSpinner(spinObjects[1]), new WallSpinner(spinObjects[2]), new WallSpinner(spinObjects[3]) };
         scoreHolder = GameObject.Find("Score Counter").GetComponent<Text>();
         finalScoreHolder = GameObject.Find("YouScored").GetComponent<Text>();
         highScoreHolder = GameObject.Find("HighScore").GetComponent<Text>();
         failSound = GameObject.Find("FailSound").GetComponent<AudioSource>();
         checkpointSound = GameObject.Find("Checkpoint").GetComponent<AudioSource>();
+
+        uiHandler.Unpause();
     }
 
     public override void LevelStart()
@@ -66,7 +66,6 @@ public class EndlessLevel : Level
         CheckForFail();
         UpdateTunnelSegments();
         FirstPointCheck();
-        SpinObstacles();
         DisplayScore();
     }
 
@@ -84,18 +83,6 @@ public class EndlessLevel : Level
             checkpointSound.Play();
             currentScore++;
             firstPointScored = true;
-        }
-    }
-
-    //Simple method for spinning the semi-circle obstacles using the WallSpinner class
-    private void SpinObstacles()
-    {
-        if (!pauseState)
-        {
-            for (int i = 0; i < wallSpinnerArray.Length; i++)
-            {
-                wallSpinnerArray[i].SpinCircle();
-            }
         }
     }
 
@@ -136,7 +123,7 @@ public class EndlessLevel : Level
     }
 
     //Method for moving the tunnel segments, waits for player to pass a threshold, then moves the furthest back segment to the furthest forward spot
-    //Increses score each time player passes an obstacle
+    //Increases score each time player passes an obstacle
     private void UpdateTunnelSegments()
     {
         for (int i = 0; i < segmentArray.Length; i++)
@@ -161,6 +148,7 @@ public class EndlessLevel : Level
                     endSegment.transform.position = nextEndSegmentPos;
                 }
                 segmentArray[i].transform.position = nextPos;
+                segmentArray[i].transform.GetChild(0).GetChild(0).GetComponent<WallSpinner>().RandomiseSpeed();
                 currentScore++;
             }
         }

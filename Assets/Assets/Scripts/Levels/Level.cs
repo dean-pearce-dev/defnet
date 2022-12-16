@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Level : MonoBehaviour
+public class Level
 {
     //Basic class for setting up levels with inheritance
     protected string levelName;

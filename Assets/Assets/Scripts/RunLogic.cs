@@ -19,7 +19,7 @@ public class RunLogic : MonoBehaviour
         {
             player = new Player();
             mainCam = new CameraControl();
-            grapple = new Grapple();
+            grapple = GameObject.Find("Player").GetComponent<Grapple>();
             uiHandler = new UIHandler(player, grapple);
         }
         levelManager = new LevelManager(grapple, player, uiHandler);
@@ -28,6 +28,8 @@ public class RunLogic : MonoBehaviour
 
     void Update()
     {
+        //TrackCursorState();
+
         if (SceneManager.GetActiveScene().name != "Menu")
         {
             if (!uiHandler.GetPauseState())
@@ -39,7 +41,9 @@ public class RunLogic : MonoBehaviour
             levelManager.LevelManagerUpdate();
         }
         else
+        {
             levelManager.LevelManagerUpdate();
+        }
     }
 
     void FixedUpdate()
@@ -59,6 +63,20 @@ public class RunLogic : MonoBehaviour
                 grapple.GrappleLateUpdate();
             }
             uiHandler.UIUpdate();
+        }
+    }
+
+    private void TrackCursorState()
+    {
+        if (Input.GetButtonDown("Left Grapple") && Cursor.lockState != CursorLockMode.Locked)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        if (Input.GetButtonDown("Pause"))
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
     }
 }
