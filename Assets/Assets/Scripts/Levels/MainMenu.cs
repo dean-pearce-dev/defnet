@@ -6,7 +6,7 @@ using System;
 public class MainMenu : Level
 {
     //Main Menu Variables
-    private GameObject howToUI, playUI, optionsUI, creditsUI, exitUI, backPromptUI, menuHolder;
+    private GameObject howToUI, playUI, optionsUI, creditsUI, backPromptUI, menuHolder;
     private GameObject[] menuArray;
     private Image[] menuImageArray;
 
@@ -28,7 +28,7 @@ public class MainMenu : Level
     private string playFlavour = "Start the game. Your last high-score was " + PlayerPrefs.GetInt("endlessHiScore") + ".";
     private string optionsFlavour = "User options.";
     private string creditsFlavour = "Credits.";
-    private string exitFlavour = "Quit the game.";
+    //private string exitFlavour = "Quit the game.";
     private string[] menuFlavourArray;
 
     //Options
@@ -70,11 +70,11 @@ public class MainMenu : Level
         playUI = GameObject.Find("Play");
         optionsUI = GameObject.Find("Options");
         creditsUI = GameObject.Find("Credits");
-        exitUI = GameObject.Find("Exit");
+        //exitUI = GameObject.Find("Exit");
         menuHolder = GameObject.Find("Menu Holder");
-        menuArray = new GameObject[] { howToUI, playUI, optionsUI, creditsUI, exitUI };
-        menuImageArray = new Image[] { howToUI.GetComponent<Image>(), playUI.GetComponent<Image>(), optionsUI.GetComponent<Image>(), creditsUI.GetComponent<Image>(), exitUI.GetComponent<Image>() };
-        menuFlavourArray = new string[] { howToFlavour, playFlavour, optionsFlavour, creditsFlavour, exitFlavour };
+        menuArray = new GameObject[] { howToUI, playUI, optionsUI, creditsUI };
+        menuImageArray = new Image[] { howToUI.GetComponent<Image>(), playUI.GetComponent<Image>(), optionsUI.GetComponent<Image>(), creditsUI.GetComponent<Image>() };
+        menuFlavourArray = new string[] { howToFlavour, playFlavour, optionsFlavour, creditsFlavour };
 
         //Options
         effectVolumeUI = GameObject.Find("Effects Volume");
@@ -320,12 +320,6 @@ public class MainMenu : Level
                 {
                     menuConfirm.Play();
                     SetMenuSelection(creditsHolder, null, null, null);
-                }
-                if (selectedElement == exitUI)
-                {
-                    menuConfirm.Play();
-                    PlayerPrefs.Save();
-                    Application.Quit();
                 }
             }
         }

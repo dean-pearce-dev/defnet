@@ -54,6 +54,7 @@ public class CameraControl
 
     float x = 0.0f;
     float y = 0.0f;
+    float deadzone = 0.11f;
 
     public CameraControl()
     {
@@ -111,7 +112,12 @@ public class CameraControl
             //Making sure moveTarget matches the current position to accurately track the next move
             moveTarget.transform.position = mainCamera.transform.position;
 
-            x += Input.GetAxis("Mouse X") * ScaleMouseSpeed(xSpeed) * distance * 0.02f;
+            //Hard coding a deadzone because the web build has mouse drift and the Unity dead zone settings aren't working
+            if (Input.GetAxis("Mouse X") >= deadzone || Input.GetAxis("Mouse X") <= -deadzone)
+            {
+                x += Input.GetAxis("Mouse X") * ScaleMouseSpeed(xSpeed) * distance * 0.02f;
+            }
+
             y -= Input.GetAxis("Mouse Y") * ScaleMouseSpeed(ySpeed) * 0.02f;
 
             y = ClampAngle(y, yMinLimit, yMaxLimit);
