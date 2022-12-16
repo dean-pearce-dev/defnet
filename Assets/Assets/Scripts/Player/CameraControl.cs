@@ -54,7 +54,9 @@ public class CameraControl
 
     float x = 0.0f;
     float y = 0.0f;
-    float deadzone = 0.11f;
+    float deadzone = 0.01f;
+
+    private Vector2 aspectRatio;
 
     public CameraControl()
     {
@@ -90,11 +92,16 @@ public class CameraControl
         crosshairArray[1] = rightGrapplingCrosshair;
         crosshairArray[2] = leftGrappleCrosshair;
         crosshairArray[3] = rightGrappleCrosshair;
+
+        //Finding aspect ratio to scale sensitivity
+        aspectRatio = GetAspectRatio();
     }
 
     //Main update logic
     public void CameraUpdate(bool grapple, bool leftGrapple, bool rightGrapple)
     {
+        //DeadzoneDebug();
+
         //Setting the private grapple bools to the ones passed in by the paramaters
         isGrappling = grapple;
         isLeftGrappling = leftGrapple;
@@ -112,12 +119,7 @@ public class CameraControl
             //Making sure moveTarget matches the current position to accurately track the next move
             moveTarget.transform.position = mainCamera.transform.position;
 
-            //Hard coding a deadzone because the web build has mouse drift and the Unity dead zone settings aren't working
-            if (Input.GetAxis("Mouse X") >= deadzone || Input.GetAxis("Mouse X") <= -deadzone)
-            {
-                x += Input.GetAxis("Mouse X") * ScaleMouseSpeed(xSpeed) * distance * 0.02f;
-            }
-
+            x += MouseXToYScale(Input.GetAxis("Mouse X")) * ScaleMouseSpeed(xSpeed) * distance * 0.02f;
             y -= Input.GetAxis("Mouse Y") * ScaleMouseSpeed(ySpeed) * 0.02f;
 
             y = ClampAngle(y, yMinLimit, yMaxLimit);
@@ -220,5 +222,44 @@ public class CameraControl
     private float ScaleMouseSpeed(float speed)
     {
         return speed * PlayerPrefs.GetFloat("mouseSens");
+    }
+
+    private float MouseXToYScale(float x)
+    {
+        return (x / aspectRatio.x) * aspectRatio.y;
+    }
+
+    private Vector2 GetAspectRatio()
+    {
+        Vector2 ratio = new Vector2();
+
+        if (Camera.main.aspect >= 1.7f)
+        {
+            ratio = new Vector2(16.0f, 9.0f);
+        }
+        else if (Camera.main.aspect >= 1.5f)
+        {
+            ratio = new Vector2(3.0f, 2.0f);
+        }
+        else
+        {
+            ratio = new Vector2(4.0f, 3.0f);
+        }
+
+        return ratio;
+    }
+
+    private void DeadzoneDebug()
+    {
+        if (Input.GetKeyDown("q"))
+        {
+            deadzone -= 0.01f;
+        }
+        if (Input.GetKeyDown("e"))
+        {
+            deadzone += 0.01f;
+        }
+
+        GameObject.Find("DebugHud").GetComponent<Text>().text = "Mouse X: " + Input.GetAxis("Mouse X") + " | Mouse Y: " + Input.GetAxis("Mouse Y") + " | Deadzone: " + deadzone;
     }
 }
