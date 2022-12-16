@@ -319,11 +319,11 @@ public class UIHandler
             if (selectedElement == endlessYesUI)
             {
                 menuConfirm.Play();
-                grapple.StopGrapple("Both");
-                player.SafePlayerReset();
                 currentLevel.ResetLevel();
-                isPaused = false;
+                Unpause();
                 SetMenuSelection(pauseMenuHolder, pauseMenuArray, pauseMenuImageArray);
+
+                grapple.StopGrapple("Both");
             }
             if (selectedElement == endlessNoUI)
             {
